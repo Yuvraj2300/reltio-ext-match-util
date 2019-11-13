@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="refresh" content="400" />
+	<title>Upload a file for Reltio External Matching</title>
+	<link rel="stylesheet" href="/css/main.css" />
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+
+<style>
+	body {
+		font-family: 'Montserrat', sans-serif;
+	}
+</style>
+
+<body>
+	<noscript>
+		<h2>Sorry! Your browser doesn't support Javascript</h2>
+	</noscript>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+		<span class="navbar-brand mb-4 h1" style="font-size: 22px;">
+			Single Page Application for External Data Matching on Reltio
+			<!-- <img src="/images/targ_lgo.jpg" alt="targ-logo" height="80" width="80"> -->
+		</span>
+		<!-- <img class="pull-right" src="/images/targ_lgo_2.jpg" alt="targ-logo" height="125" width="125" style="background: transparent;mix-blend-mode: multiply;"> -->
+	</nav>
+	<!-- 
+	<div id="img_container" class="img-container pull-left" style="padding:40px">
+		<img src="/images/targ_lgo.jpg" alt="targ-logo" height="105" width="105">
+	</div> -->
+
+	<div class="container">
+		<div id="upload_container" class="upload-container">
+			<div class="upload-header">
+				<h2>Upload a file</h2>
+			</div>
+			<div class="upload-content">
+				<div class="single-upload">
+					<!-- <h3>Upload Single File</h3> -->
+					<form class="md-form" id="singleUploadForm" name="singleUploadForm">
+						<input id="singleFileUploadInput" type="file" name="file" class="file-input" required /> <span>
+							<button id="submit-btn" type="submit" class="primary submit-btn">Submit</button>
+						</span>
+
+						<!-- <button type="submit" class="primary submit-btn">Submit</button> -->
+
+						<!-- <form class="md-form">
+				<div class="file-field">
+					<div class="btn btn-primary btn-sm float-left">
+						<span>Choose file</span> <input type="file">
+					</div>
+					<div class="file-path-wrapper">
+						<input class="file-path validate" type="text"
+							placeholder="Upload your file">
+					</div>
+				</div> -->
+					</form>
+					<div class="upload-response">
+						<div id="singleFileUploadError"></div>
+						<div id="singleFileUploadSuccess"></div>
+					</div>
+				</div>
+
+				<!-- <div class="multiple-upload">
+				<h3>Upload Multiple Files</h3>
+				<form id="multipleUploadForm" name="multipleUploadForm">
+					<input id="multipleFileUploadInput" type="file" name="files"
+						class="file-input" multiple required />
+					<button type="submit" class="primary submit-btn">Submit</button>
+				</form>
+				<div class="upload-response">
+					<div id="multipleFileUploadError"></div>
+					<div id="multipleFileUploadSuccess"></div>
+				</div>
+			</div> -->
+				<div id="stats_btn" class="btn btn-default pull-right" onclick="showSummary()">Show Stats
+				</div>
+			</div>
+		</div>
+
+		<div id="stats_container" class=stats-container style="display: none">
+			<div class="stats-header">
+				<h2>Statistics</h2>
+			</div>
+			<div id="stats-vals">
+				<table id="stats-table" style="width: 100%;">
+					<tr>
+						<td style="padding: 20px;">No. Input Records(Unique) :</td>
+						<td id="ip-val" style="padding: 20px;"></td>
+						<td style="padding: 20px;">No. UnMatched Records :</td>
+						<td id="unm-val" style="padding: 20px;"></td>
+					</tr>
+					<tr>
+						<td style="padding: 20px;">No. Matched Records :</td>
+						<td id="m-val" style="padding: 20px;"></td>
+						<td style="padding: 20px;">Match Percentage :</td>
+						<td id="perc-val" style="padding: 20px;"></td>
+
+					</tr>
+				</table>
+			</div>
+			<div id="chart-container" style="width:100%; height:400px;"></div>
+		</div>
+		<div id="more_btn" style="display: none" class="btn btn-default pull-right" onclick="showDetails()">More
+			Details
+		</div>
+		<!-- <form action="/summary" method="get">
+			<div class="btn btn-default pull-right" onclick="window.open(" localhost/summary", "_blank" );">Summary
+			</div>
+		</form> -->
+		<div id="details_container" class="details-container"
+			style= "display:none; min-height: 300px;overflow: hidden;width: auto;white-space: nowrap;overflow-x: auto;">
+			<div class="details-header">
+				<h2>Details of matched records</h2>
+			</div>
+			<table id="details-table" style="width: 100%;">
+				<tr>
+					<th style="padding:20px;">First Name</th>
+					<th style="padding:20px;">Last Name</th>
+					<th style="padding:20px;">Address Line 1</th>
+					<th style="padding:20px;">Zip</th>
+					<th style="padding:20px;">Identifier : ME</th>
+					<th style="padding:20px;">Identifier : NPI</th>
+					<th style="padding:20px;">Reltio Uri</th>
+					<th style="padding:20px;">Input Record ID</th>
+					<th style="padding:20px;">Match Rule Name</th>
+					<th style="padding:20px;">Match Rule Type</th>
+				</tr>
+			</table>
+		</div>
+
+
+	</div>
+	<div class="pull-right" style="position: relative; width: 200px; height: 80px;">
+		<div id="team_name" class="team-name pull-right md-9"
+			style="position:absolute; bottom: 5px; padding: 40px; color: black">
+			&#174;House Targaryen
+		</div>
+	</div>
+	<script>
+
+		//setTimeout(function () { getMoreDetailsAJAX(); }, 3000);
+		getMoreDetailsAJAX();
+		$(document).ready(function () {
+			$("#upload_container").hide(0).delay(100).fadeIn(1000)
+		});
+		function showSummary() {
+			$('#stats_container').fadeToggle(600);
+			//	changeTextStat();
+			moreButton();
+		}
+
+		function moreButton() {
+			$('#more_btn').fadeToggle(600);
+		}
+		function showDetails() {
+			$('#details_container').fadeToggle(600);
+		}
+
+		// function changeTextStat() {
+		// 	el = document.getElementById('stats_btn');
+		// 	console.log('Value from el '+el.innerHTML);
+		// 	if (el.innerHTML === "Show Stats")
+		// 	el.innerHTML = "Hide Stats";
+		// 	else
+		// 	el.innerHTML = "Show Stats";
+		// }
+
+		var base_url = 'http://localhost:8081/utility';
+		var ip_url= 'http://13.59.139.133:8081/utility';
+		var jsonPath = 'C:\\Users\\ys19299\\output\\match_output.json'
+
+		function populateData() {
+			getCount();
+			getUnMatched();
+			getMatched();
+			getDetailForCharts();
+		}
+
+		function getMoreDetailsAJAX() {
+			$.ajax('http://localhost:8081/utility/match/result', {
+				cache: false,
+				type: 'GET',
+				dataType: 'json',
+				success: function (data) {
+
+					populateData();
+					getPercentage();
+
+					var i = 0;
+					
+					for (; i < data.length; i++) {
+						var attributes=data[i].matchedEntities.length;
+						console.log(attributes);
+						if (attributes == 0) {
+							console.log(data[i].inputRecordId + ' had no matches');
+						} else {
+							//console.log('data:'+data[i].matchedEntities[0].attributes.LastName[0].value);
+							table = document.getElementById('details-table');
+							
+							
+								//ADDING ANOTHER LOOP TO ITERATE OVER matchedEntities UNDER data.
+								for(j=0;j<attributes;j++){
+								// Creates a new row in the table every time the code enters the loop.
+									var newRow = table.insertRow();
+									newRow.innerHTML=
+										'<td style="padding:20px">' + data[i].matchedEntities[j].attributes.FirstName[0].value + '</td>' +
+										'<td style="padding:20px">' + data[i].matchedEntities[j].attributes.LastName[0].value + '</td>' +
+										'<td style="padding:20px">' + data[i].matchedEntities[j].attributes.Address[0].value.AddressLine1[0].value + '</td>' +
+										'<td style="padding:20px">' + data[i].matchedEntities[j].attributes.Address[0].value.Zip[0].value.Zip4[0].value + '-' + data[i].matchedEntities[0].attributes.Address[0].value.Zip[0].value.Zip5[0].value + '</td>' +
+										'<td style="padding:20px">' + data[i].matchedEntities[j].attributes.NPI[0].value + '</td>' +
+										'<td style="padding:20px">' + data[i].matchedEntities[j].attributes.ME[0].value + '</td>' +
+										'<td style="padding:20px">' + data[i].matchedEntities[j].uri + '</td>' +
+										'<td style="padding:20px">' + data[i].inputRecordId + '</td>'+
+										'<td style="padding:20px">' + data[i].matchedEntities[j].matchRuleName + '</td>'+
+										'<td style="padding:20px">' + data[i].matchedEntities[j].matchRuleType + '</td>'
+								}
+							
+								//HAVE TO EITHER ADD A NEW LOOP TO ITERATE OVER addresses OR A CHECK FOR A PRIMARY ADDRESS
+							
+								
+							/* 
+							STATIC NON-ITERATING CODE JUST OVER data	
+							newRow.innerHTML = 
+								'<td style="padding:20px">' + data[i].matchedEntities[0].attributes.FirstName[0].value + '</td>' +
+								'<td style="padding:20px">' + data[i].matchedEntities[0].attributes.LastName[0].value + '</td>' +
+								'<td style="padding:20px">' + data[i].matchedEntities[0].attributes.Address[0].value.AddressLine1[0].value + '</td>' +
+								'<td style="padding:20px">' + data[i].matchedEntities[0].attributes.Address[0].value.Zip[0].value.Zip4[0].value + '-' + data[i].matchedEntities[0].attributes.Address[0].value.Zip[0].value.Zip5[0].value + '</td>' +
+								'<td style="padding:20px">' + data[i].matchedEntities[0].attributes.NPI[0].value + '</td>' +
+								'<td style="padding:20px">' + data[i].matchedEntities[0].attributes.ME[0].value + '</td>' +
+								'<td style="padding:20px">' + data[i].matchedEntities[0].uri + '</td>' +
+								'<td style="padding:20px">' + data[i].inputRecordId + '</td>'+
+								'<td style="padding:20px">' + data[i].matchedEntities[0].matchRuleName + '</td>'+
+								'<td style="padding:20px">' + data[i].matchedEntities[0].matchRuleType + '</td>' */
+						}
+					}
+				}
+			});
+		}
+
+
+
+
+		function getCount() {
+			$.ajax(base_url + '/count', {
+				cache: false,
+				type: 'GET',
+				dataType: 'json',
+				success: function (data) {
+					console.log(data);
+					displayCount(data);
+				}
+			});
+		}
+
+		function getMatched() {
+			$.ajax(base_url + '/matched', {
+				cache: false,
+				type: 'GET',
+				dataType: 'json',
+				success: function (data) {
+					console.log(data);
+					displayMatched(data);
+				}
+			});
+		}
+
+		function getPercentage() {
+			$.ajax(base_url + '/matchPercentage', {
+				cache: false,
+				type: 'GET',
+				dataType: 'json',
+				success: function (data) {
+					console.log(data);
+					displayPercentage(data);
+				}
+			});
+		}
+
+		function getUnMatched() {
+			$.ajax(base_url + '/unmatched', {
+				cache: false,
+				type: 'GET',
+				dataType: 'json',
+				success: function (data) {
+					console.log(data);
+					displayUnMatched(data);
+				}
+			});
+		}
+
+		function displayUnMatched(data) {
+			if (data == 0) {
+				ipRecs = document.getElementById("unm-val").innerHTML = '-';
+			} else {
+				ipRecs = document.getElementById("unm-val").innerHTML = data;
+			}
+
+		}
+
+		function displayMatched(data) {
+			if (data == 0) {
+				ipRecs = document.getElementById("m-val").innerHTML = '-';
+			} else {
+				ipRecs = document.getElementById("m-val").innerHTML = data;
+			}
+
+		}
+
+		function displayPercentage(data) {
+			if (data == 0) {
+				ipRecs = document.getElementById("perc-val").innerHTML = '-';
+			} else {
+				ipRecs = document.getElementById("perc-val").innerHTML = data + '%';
+			}
+
+		}
+
+
+		function displayCount(data) {
+			if (data == 0) {
+				ipRecs = document.getElementById("ip-val").innerHTML = '-';
+			} else {
+				ipRecs = document.getElementById("ip-val").innerHTML = data;
+			}
+		}
+
+		var matchedNumber;
+		var unMatchedNumber;
+
+		function getDetailForCharts() {
+			var xhr_matched = new XMLHttpRequest();
+			var xhr_unmatched = new XMLHttpRequest();
+			xhr_matched.open('GET', base_url + '/matched');
+			xhr_matched.send();
+			xhr_matched.onload = function () {
+				if (xhr_matched.status != 200) {
+					console.log('Matched records api not working');
+				} else {
+					console.log('value from mathced resp:' + xhr_matched.response);
+					matchedNumber = xhr_matched.response;
+					console.log(matchedNumber);
+					xhr_unmatched.open('GET', base_url + '/unmatched');
+					xhr_unmatched.send();
+					xhr_unmatched.onload = function () {
+						console.log('value from unmathced resp:' + xhr_unmatched.response);
+						unMatchedNumber = xhr_unmatched.response;
+						console.log(unMatchedNumber);
+						renderChart(parseInt(matchedNumber), parseInt(unMatchedNumber));
+					}
+				}
+			}
+
+		}
+
+		function renderChart(matchedVal, unMatchedVal) {
+			//document.addEventListener('DOMContentLoaded', function () {
+			var myChart = Highcharts.chart('chart-container', {
+				chart: {
+					type: 'bar'
+				},
+				title: {
+					text: ''
+				},
+				xAxis: {
+					allowDecimals: false,
+					categories: ['Matched', 'UnMatched'],
+					gridLineWidth: 0,
+					minorGridLineWidth: 0,
+				},
+				yAxis: {
+					allowDecimals: false,
+					title: {
+						text: 'Frequency'
+					},
+					gridLineWidth: 0,
+					minorGridLineWidth: 0,
+				},
+				plotOptions: {
+					bar: {
+						minPointLength: 5,
+						dataLabels: {
+							enabled: true
+						}
+					},
+					series: {
+						pointWidth: 20
+					},
+
+				},
+				series: [{
+					name: 'Records',
+					// data: [9,
+					// 	0]
+					data: [matchedVal,
+						unMatchedVal]
+				}]
+			});
+			//});
+		}
+
+	</script>
+	<script src="/js/main.js"></script>
+	<script src="/js/requests.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</body>
+
+</html>
